@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Flask App</title>
+    <title>{% block title %}Flask App{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head %}{% endblock %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+    {% block content %}
     <h1>Hello Flask 🚀</h1>
     <p>Flask project setup successful!</p>
+    {% endblock %}
 </body>
 </html>

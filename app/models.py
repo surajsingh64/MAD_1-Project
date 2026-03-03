@@ -3,6 +3,8 @@ from flask_login import UserMixin
 from app import db
 
 # user
+# User model with role-based access control (admin, student, company)
+
 class User(UserMixin, db.Model):
      __tablename__ = "users"
 
@@ -17,6 +19,7 @@ class User(UserMixin, db.Model):
           return f"<User {self.email} | {self.role}>"
 
 # Student
+# Student model with fields like name, roll number, branch, CGPA, phone, resume, and blacklist status    
 class Student(db.Model):
      __tablename__ = "students"
      id = db.Column(db.Integer, primary_key=True )
@@ -37,6 +40,8 @@ class Student(db.Model):
           return f"<Student {self.name}>"
 
 # company
+
+# Company model with fields like company name, HR contact, website, approval status, and blacklist status
 class Company(db.Model):
      __tablename__ = "companies"
 
@@ -58,6 +63,7 @@ class Company(db.Model):
 
 
 # Placement drive
+# PlacementDrive model with fields like company_id, job title, description, eligibility criteria, application deadline, and status (pending, approved, rejected)
 class PlacementDrive(db.Model):
      __tablename__ = "placement_drives"
 
@@ -78,6 +84,7 @@ class PlacementDrive(db.Model):
 
 
 # Application
+# Application model linking students and placement drives, with fields for application date and status (applied, shortlisted, rejected)
 class Application(db.Model):
      __tablename__ = "applications"
 
