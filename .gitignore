@@ -1,11 +1,20 @@
 # Virtual environment
 venv/
+env/
 .env/
 
 # Python cache
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+
+# Flask instance folder (contains database)
+instance/
+
+# Database files
+*.db
+*.sqlite3
 
 # Environment variables
 .env
@@ -19,6 +28,3 @@ Thumbs.db
 
 # Logs
 *.log
-
-# Database
-*.sqlite3
