@@ -1,42 +1,51 @@
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app import db
+from app import db, student
 from app.models import User, Company, PlacementDrive, Application
 from . import admin_bp
+from app.models import Student
 
 
-# ================= ADMIN DASHBOARD =================
+#  here we are checking if the user is admin or not
+def admin_required():
+    if current_user.role != "admin":
+        flash("Access denied!", "danger")
+        return False
+    return True
+
+
+# dashboard route
 @admin_bp.route("/dashboard")
 @login_required
 def dashboard():
 
-    if current_user.role != "admin":
-        flash("Access denied!", "error")
+    if not admin_required():
         return redirect(url_for("auth.login"))
 
-    # Counts
     total_student = User.query.filter_by(role="student").count()
-    total_companies = User.query.filter_by(role="company").count()
+    total_companies = Company.query.count()
     total_drives = PlacementDrive.query.count()
     total_applications = Application.query.count()
 
     view = request.args.get("view")
 
-    # Pending companies
-    all_pending_companies = Company.query.filter_by(
+    pending_companies = Company.query.filter_by(
         approval_status="pending",
         is_blacklisted=False
     ).all()
 
-    # Blacklisted companies
-    all_blocked_companies = Company.query.filter_by(
+    blacklisted_companies = Company.query.filter_by(
         is_blacklisted=True
     ).all()
 
-    # Pending drives
     pending_drives = PlacementDrive.query.filter_by(
         status="pending"
     ).all()
+ #placement drives
+    drive_view = request.args.get("drive_view")
+ # pending drives
+    pending_drives = PlacementDrive.query.filter_by(status='pending').all()
+    reject_drives = PlacementDrive.query.filter_by(status='rejected').all()
 
     return render_template(
         "admin/dashboard.html",
@@ -45,26 +54,46 @@ def dashboard():
         total_drives=total_drives,
         total_applications=total_applications,
         view=view,
-        all_pending_companies=all_pending_companies,
-        all_blocked_companies=all_blocked_companies,
-        pending_drives=pending_drives
+        pending_companies=pending_companies,
+        blacklisted_companies=blacklisted_companies,
+        pending_drives=pending_drives,
+        reject_drives=reject_drives,
+        drive_view=drive_view
     )
 
-
-# ================= VIEW TOGGLE =================
-@admin_bp.route("/a_admin")
+# view students
+@admin_bp.route("/students")
 @login_required
-def a_admin():
+def students():
+
+    if current_user.role != "admin":
+        flash("Access denied!", "danger")
+        return redirect(url_for("auth.login"))
+
+    students = User.query.filter_by(role="student").all()
+
+    return render_template(
+        "admin/students.html",
+        students=students
+    )
+
+# view toggle for companies and drives
+@admin_bp.route("/view")
+@login_required
+def view_toggle():
 
     view = request.args.get("view")
 
     return redirect(url_for("admin.dashboard", view=view))
 
 
-# ================= APPROVE COMPANY =================
+# aprove company
 @admin_bp.route("/approve_company/<int:id>")
 @login_required
 def approve_company(id):
+
+    if not admin_required():
+        return redirect(url_for("auth.login"))
 
     company = Company.query.get_or_404(id)
 
@@ -72,16 +101,30 @@ def approve_company(id):
     company.is_blacklisted = False
 
     db.session.commit()
-
     flash("Company approved successfully", "success")
 
     return redirect(url_for("admin.dashboard"))
 
+# reject company
+@admin_bp.route("/reject_company/<int:id>")
+@login_required
+def reject_company(id):
+    if not admin_required():
+        return redirect(url_for("auth.login"))
+    company = Company.query.get_or_404(id)
+    company.approval_status = "rejected"
+    db.session.commit()
+    flash("Company rejected", "danger")
+    return redirect(url_for("admin.dashboard"))
 
-# ================= REJECT / BLACKLIST COMPANY =================
+
+# blacklisted company
 @admin_bp.route("/block_company/<int:id>")
 @login_required
 def block_company(id):
+
+    if not admin_required():
+        return redirect(url_for("auth.login"))
 
     company = Company.query.get_or_404(id)
 
@@ -94,10 +137,13 @@ def block_company(id):
     return redirect(url_for("admin.dashboard", view="blacklist"))
 
 
-# ================= WHITELIST COMPANY =================
-@admin_bp.route("/pending/<int:id>")
+# remove from blacklist
+@admin_bp.route("/whitelist_company/<int:id>")
 @login_required
-def pending_company(id):
+def whitelist_company(id):
+
+    if not admin_required():
+        return redirect(url_for("auth.login"))
 
     company = Company.query.get_or_404(id)
 
@@ -110,11 +156,30 @@ def pending_company(id):
 
     return redirect(url_for("admin.dashboard"))
 
-
-# ================= APPROVE DRIVE =================
-@admin_bp.route("/approve_drives/<int:id>")
+# pending company
+@admin_bp.route("/pending_company/<int:id>")
 @login_required
-def approve_drives(id):
+def pending_company(id):
+
+    if not admin_required():
+        return redirect(url_for("auth.login"))
+    company = Company.query.get_or_404(id)
+    company.approval_status = "pending"
+    company.is_blacklisted = False
+    db.session.commit()
+    flash("Company moved to pending list", "info")
+    return redirect(url_for("admin.dashboard"))
+
+# ------------------------drive-----------------------------
+
+
+# approve drive
+@admin_bp.route("/approve_drive/<int:id>")
+@login_required
+def approve_drive(id):
+
+    if not admin_required():
+        return redirect(url_for("auth.login"))
 
     drive = PlacementDrive.query.get_or_404(id)
 
@@ -127,17 +192,53 @@ def approve_drives(id):
     return redirect(url_for("admin.dashboard"))
 
 
-# ================= REJECT DRIVE =================
-@admin_bp.route("/drives_reject/<int:id>")
+#reject drive
+@admin_bp.route("/reject_drive/<int:id>")
 @login_required
-def drives_reject(id):
+def reject_drive(id):
+
+    if not admin_required():
+        return redirect(url_for("auth.login"))
 
     drive = PlacementDrive.query.get_or_404(id)
-
     drive.status = "rejected"
-
     db.session.commit()
-
     flash("Drive rejected", "danger")
-
     return redirect(url_for("admin.dashboard"))
+
+@admin_bp.route("/companies")
+@login_required
+def companies():
+
+    companies = Company.query.all()
+
+    return render_template(
+        "admin/companies.html",
+        companies=companies
+    )
+
+@admin_bp.route("/drives")
+@login_required
+def drives():
+
+    drives = PlacementDrive.query.all()
+
+    return render_template(
+        "admin/drives.html",
+        drives=drives
+    )
+
+# blacklist student
+@admin_bp.route("/toggle_blacklist/<int:id>")
+@login_required
+def toggle_blacklist(id):
+
+    student = Student.query.filter_by(user_id=id).first()
+
+    if student:
+        student.is_blacklisted = not student.is_blacklisted
+        db.session.commit()
+
+    flash("Student status updated", "success")
+
+    return redirect(url_for("admin.students"))

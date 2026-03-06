@@ -54,7 +54,7 @@ def login():
             elif user.role == "student":
                 return redirect(url_for("student.dashboard"))
             else:
-                return redirect(url_for("main.dashboard"))
+                return redirect(url_for("company.dashboard"))
 
         flash("Invalid email or password!")
 

@@ -2,130 +2,106 @@
 
 {% block content %}
 
+<div class="container-fluid py-4">
+<div class="row justify-content-center">
+<div class="col-lg-11">
+<h3 class="mb-4 fw-semibold">Admin Dashboard</h3>
 
-<div class="container-fluid">
-<div class="row">
 
-<!-- Sidebar -->
-<div class="col-md-2 sidebar p-3">
+<!--stats-->
 
-<h5 class="text-white mb-4">Admin Panel</h5>
+<div class="row g-4 mb-4">
 
-<ul class="nav flex-column">
-
-<li class="nav-item mb-2">
-<a class="nav-link text-white" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
-</li>
-
-<li class="nav-item mb-2">
-<a class="nav-link text-white" href="#">Students</a>
-</li>
-
-<li class="nav-item mb-2">
-<a class="nav-link text-white" href="#">Companies</a>
-</li>
-
-<li class="nav-item mb-2">
-<a class="nav-link text-white" href="#">Placement Drives</a>
-</li>
-
-</ul>
-
-</div>
-
-<!-- Main Content -->
-<div class="col-md-10 p-4 bg-light">
-
-<h3 class="mb-4">Admin Dashboard</h3>
-
-<!-- Stats -->
-<div class="row g-4">
+    <div class="col-md-3">
+        <div class="card stat-card text-white border-0">
+            <div class="card-body">
+                <h6>Total Students</h6>
+                <h3>{{ total_student }}</h3>
+            </div>
+        </div>
+    </div>
 
 <div class="col-md-3">
-<div class="card shadow border-0 stat-card">
-<div class="card-body">
-<h6>Total Students</h6>
-<h3>{{ total_student }}</h3>
-</div>
-</div>
+    <div class="card stat-card text-white border-0">
+        <div class="card-body">
+            <h6>Total Companies</h6>
+            <h3 class="fw-bold">{{ total_companies }}</h3>
+        </div>
+    </div>
 </div>
 
 <div class="col-md-3">
-<div class="card shadow border-0 stat-card">
-<div class="card-body">
-<h6>Total Companies</h6>
-<h3>{{ total_companies }}</h3>
-</div>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card shadow border-0 stat-card">
-<div class="card-body">
-<h6>Placement Drives</h6>
-<h3>{{ total_drives }}</h3>
-</div>
-</div>
+    <div class="card stat-card text-white border-0">
+        <div class="card-body">
+            <h6 class="text-white">Placement Drives</h6>
+            <h3 class="fw-bold">{{ total_drives }}</h3>
+        </div>
+    </div>
 </div>
 
 <div class="col-md-3">
-<div class="card shadow border-0 stat-card">
-<div class="card-body">
-<h6>Applications</h6>
-<h3>{{ total_applications }}</h3>
-</div>
-</div>
-</div>
-
-</div>
-
-<!-- Company Management -->
-<div class="card shadow mt-4">
-<div class="card-body">
-
-<div class="d-flex justify-content-between">
-<h5>Company Management</h5>
-
-{% if view == "blacklist" %}
-<a class="btn btn-primary btn-sm"
-href="{{ url_for('admin.dashboard') }}">
-View Pending
-</a>
-{% else %}
-<a class="btn btn-dark btn-sm"
-href="{{ url_for('admin.dashboard', view='blacklist') }}">
-View Blacklisted
-</a>
-{% endif %}
-
-</div>
-
-<hr>
-
-{% if view == "blacklist" %}
-{% include "admin/blacklist_edit.html" %}
-{% else %}
-{% include "admin/pending_c.html" %}
-{% endif %}
-
-</div>
-</div>
-
-<!-- Pending Drives -->
-<div class="card shadow mt-4">
-<div class="card-body">
-
-<h5>Pending Drives</h5>
-
-<hr>
-
-{% include "admin/drives.html" %}
-
-</div>
+    <div class="card stat-card text-white border-0">
+        <div class="card-body">
+            <h6 class="text-white">Applications</h6>
+            <h3 class="fw-bold">{{ total_applications }}</h3>
+        </div>
+    </div>
 </div>
 
 </div>
 
+
+<!-- comapany -->
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+        <h5 class="fw-semibold mb-0">Company Management</h5>
+            <span> {% if view == "blacklist" %}
+
+                <a class="btn btn-primary btn-sm"
+                href="{{ url_for('admin.dashboard') }}">
+                    View Pending
+                </a>
+
+                {% else %}
+
+                <a class="btn btn-dark btn-sm"
+                href="{{ url_for('admin.dashboard', view='blacklist') }}">
+                View Blacklisted
+                </a>
+
+            {% endif %}
+            </span>
+
+        </div>
+
+            <hr>
+
+                {% if view == "blacklist" %}
+                {% include "admin/blacklist_edit.html" %}
+                {% else %}
+                {% include "admin/pending_c.html" %}
+                {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- pending drives -->
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+    <h5 class="fw-semibold">Pending Drives</h5>
+    <hr>
+
+    {% include "admin/drives.html" %}
+
+    </div>
+
+</div>
+</div>
 </div>
 </div>
 

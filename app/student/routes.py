@@ -1,88 +1,173 @@
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, request, url_for
 from flask_login import login_required, current_user
+from app.models import Student, PlacementDrive, Application
 from app import db
-from app.models import PlacementDrive, Student, Application
 from . import student_bp
 
 
-# ---------------- Role Decorator ----------------
-def student_required(f):
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if current_user.role != "student":
-            return redirect(url_for("main.dashboard"))
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-# ---------------- Dashboard ----------------
-@student_bp.route("/")
+@student_bp.route("/dashboard")
 @login_required
-@student_required
 def dashboard():
-    return render_template("student/dashboard.html")
 
+    if current_user.role != "student":
+        return "Unauthorized", 403
 
-# ---------------- View All Jobs ----------------
-@student_bp.route("/jobs")
-@login_required
-@student_required
-def view_jobs():
-    drives = PlacementDrive.query.filter_by(status='approved').all()
-    return render_template("student/jobs.html", drives=drives)
-
-
-# ---------------- Apply to Job ----------------
-@student_bp.route("/apply/<int:drive_id>")
-@login_required
-@student_required
-def apply_job(drive_id):
-    # Get student profile
     student = Student.query.filter_by(user_id=current_user.id).first()
-    
-    if not student:
-        flash("Please complete your profile first.")
-        return redirect(url_for("student.profile"))
 
-    # Check if already applied
+    if not student:
+        return "Student profile not found", 404
+
+    available_drives = PlacementDrive.query.filter_by(status="open").all()
+
+    applications = Application.query.filter_by(student_id=student.id).all()
+
+    total_applied = len(applications)
+
+    total_shortlisted = Application.query.filter_by(
+        student_id=student.id,
+        status="shortlisted"
+    ).count()
+
+    total_rejected = Application.query.filter_by(
+        student_id=student.id,
+        status="rejected"
+    ).count()
+
+    return render_template(
+        "student/dashboard.html",
+        student=student,
+        available_drives=available_drives,
+        applications=applications,
+        total_applied=total_applied,
+        total_shortlisted=total_shortlisted,
+        total_rejected=total_rejected
+    )
+
+
+@student_bp.route("/apply_drive/<int:drive_id>", methods=["POST"])
+@login_required
+def apply_drive(drive_id):
+
+    if current_user.role != "student":
+        return "Unauthorized", 403
+
+    student = Student.query.filter_by(user_id=current_user.id).first()
+
+    if not student:
+        return "Student profile not found", 404
+
+    if student.is_blacklisted:
+        return "You are blacklisted and cannot apply", 403
+
+    drive = PlacementDrive.query.get_or_404(drive_id)
+
+    if drive.status != "open":
+        return "Drive not available", 404
+
     existing_application = Application.query.filter_by(
-        drive_id=drive_id,
-        student_id=student.id
+        student_id=student.id,
+        drive_id=drive_id
     ).first()
 
     if existing_application:
-        flash("You already applied for this placement drive.")
-        return redirect(url_for("student.view_jobs"))
+        return "Already applied", 400
 
     new_application = Application(
-        drive_id=drive_id,
         student_id=student.id,
+        drive_id=drive_id,
         status="applied"
     )
 
     db.session.add(new_application)
     db.session.commit()
 
-    flash("Application submitted successfully!")
-    return redirect(url_for("student.view_jobs"))
+    return redirect(url_for("student.dashboard"))
 
-
-# ---------------- My Applications ----------------
-@student_bp.route("/applications")
+@student_bp.route("/profile/<int:student_id>", methods=["GET", "POST"])
 @login_required
-@student_required
-def my_applications():
-    applications = Application.query.filter_by(
-        student_id=current_user.id
-    ).all()
+def student_profile(student_id):
 
-    return render_template("student/applications.html", applications=applications)
+    if current_user.role != "student":
+        return "Unauthorized", 403
 
+    student = Student.query.filter_by(user_id=current_user.id).first()
 
-# ---------------- Profile ----------------
-@student_bp.route("/profile")
+    if not student or student.id != student_id:
+        return "Student profile not found", 404
+
+    if request.method == "POST":
+
+        student.name = request.form.get("name")
+        student.branch = request.form.get("branch")
+        student.phone = request.form.get("phone")
+        student.cgpa = request.form.get("cgpa")
+
+        db.session.commit()
+
+        return redirect(url_for("student.student_profile", student_id=student_id))
+
+    return render_template("student/profile.html", student=student)
+
+@student_bp.route("/history/<int:student_id>")
 @login_required
-@student_required
-def profile():
-    return render_template("student/profile.html")
+def student_history(student_id):
+
+    if current_user.role != "student":
+        return "Unauthorized", 403
+
+    student = Student.query.filter_by(user_id=current_user.id).first()
+
+    if not student or student.id != student_id:
+        return "Student profile not found", 404
+
+    applications = Application.query.filter_by(student_id=student.id).all()
+
+    return render_template(
+        "student/history.html",
+        applications=applications
+    )
+
+@student_bp.route("/available_drives")
+@login_required
+def available_drives():
+
+    student = Student.query.filter_by(user_id=current_user.id).first()
+
+    drives = PlacementDrive.query.filter_by(status="open").all()
+
+    return render_template(
+        "student/available_drive.html",
+        drives=drives,
+        student=student
+    )
+
+@student_bp.route("/applied_drives")
+@login_required
+def applied_drives():
+
+    student = Student.query.filter_by(user_id=current_user.id).first()
+
+    applications = Application.query.filter_by(student_id=student.id).all()
+
+    return render_template(
+        "student/applied_drive.html",
+        applications=applications
+    )
+
+
+@student_bp.route("/stats")
+@login_required
+def stats():
+
+    student = Student.query.filter_by(user_id=current_user.id).first()
+
+    total_applied = Application.query.filter_by(student_id=student.id).count()
+    shortlisted = Application.query.filter_by(student_id=student.id, status="shortlisted").count()
+    rejected = Application.query.filter_by(student_id=student.id, status="rejected").count()
+
+    return render_template(
+        "student/stats.html",
+        total_applied=total_applied,
+        shortlisted=shortlisted,
+        rejected=rejected
+    )
