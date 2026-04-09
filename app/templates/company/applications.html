@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h3 class="mb-4">Student Application Details</h3>
+
+    <div class="card shadow">
+        <div class="card-body">
+
+            <h4 class="card-title py-2 "> Name : {{ application.student.name }}</h4>
+
+            <p><strong>Roll No:</strong> {{ application.student.roll_no }}</p>
+            <p><strong>Branch:</strong> {{ application.student.branch }}</p>
+            <p><strong>CGPA:</strong> {{ application.student.cgpa }}</p>
+            <p><strong>Phone:</strong> {{ application.student.phone }}</p>
+
+            <p><strong>Applied For:</strong> {{ application.drive.job_title }}</p>
+            <p><strong>Applied On:</strong> {{ application.applied_on.strftime('%d %b %Y') }}</p>
+
+            <p><strong>Status:</strong>
+                <span class="badge bg-primary">
+                    {{ application.status }}
+                </span>
+            </p>
+
+            {% if application.student.resume %}
+            <p>
+                <strong>Resume:</strong>
+                <a href="{{ url_for('static', filename='uploads/' + application.student.resume) }}"
+                   target="_blank"
+                   class="btn btn-sm btn-secondary">
+                   View Resume
+                </a>
+            </p>
+            {% endif %}
+
+            <hr>
+
+          <h5>Update Status</h5>
+
+                <form action="{{ url_for('company.update_application_status', app_id=application.id, status='shortlisted') }}" method="POST" style="display:inline;">
+                    <button class="btn btn-warning btn-sm">Shortlist</button>
+                </form>
+
+                <form action="{{ url_for('company.update_application_status', app_id=application.id, status='selected') }}" method="POST" style="display:inline;">
+                    <button class="btn btn-success btn-sm">Select</button>
+                </form>
+
+                <form action="{{ url_for('company.update_application_status', app_id=application.id, status='rejected') }}" method="POST" style="display:inline;">
+                    <button class="btn btn-danger btn-sm">Reject</button>
+                </form>
+
+               <hr>
+
+            <a href="{{ url_for('company.view_application', id=application.drive.id) }}"
+               class="btn btn-secondary">
+               Back
+            </a>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

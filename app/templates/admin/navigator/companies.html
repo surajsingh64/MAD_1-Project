@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">Registered Companies</h3>
+        <span class="badge bg-dark">Total: {{ companies|length }}</span>
+    </div>
+
+    <!-- Search -->
+   <form method="GET" action="{{ url_for('admin.companies') }}" class="d-flex mb-3">
+    <input type="text" 
+           name="search" 
+           placeholder="Search by company name, HR"
+           class="form-control me-2"
+           value="{{ search or '' }}">
+    
+    <button class="btn btn-primary">Search</button>
+</form>
+
+    <!-- Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+
+            {% if companies %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+
+                    <!-- Header -->
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Company Name</th>
+                            <th>Email</th>
+                            <th>HR Name</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Body -->
+                    <tbody class="text-center">
+
+                        {% for company in companies %}
+                        <tr>
+
+                            <td>{{ loop.index }}</td>
+                            <td class="text-start">{{ company.company_name }}</td>
+                            <td>{{ company.user.email }}</td>
+                            <td>{{ company.hr_name or 'N/A' }}</td>
+
+                            <!-- Status -->
+                            <td>
+                                {% if company.approval_status == 'approved' %}
+                                    <span class="badge bg-success px-3 py-2">Approved</span>
+                                {% elif company.approval_status == 'rejected' %}
+                                    <span class="badge bg-danger px-3 py-2">Rejected</span>
+                                {% elif company.approval_status == 'blacklisted' %}
+                                    <span class="badge bg-dark px-3 py-2">Blacklisted</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark px-3 py-2">Pending</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Actions -->
+                            <td>
+                                <div class="d-flex justify-content-center gap-2 flex-wrap">
+
+                                    {% if company.approval_status != 'approved' %}
+                                        <a href="{{ url_for('admin.approve_company', id=company.id) }}"
+                                           class="btn btn-outline-success btn-sm">
+                                           Approve
+                                        </a>
+                                    {% endif %}
+
+                                    {% if company.approval_status != 'rejected' %}
+                                        <a href="{{ url_for('admin.reject_company', id=company.id) }}"
+                                           class="btn btn-outline-danger btn-sm">
+                                           Reject
+                                        </a>
+                                    {% endif %}
+
+                                    {% if company.approval_status != 'blacklisted' %}
+                                        <a href="{{ url_for('admin.blacklist_company', id=company.id) }}"
+                                           class="btn btn-outline-dark btn-sm">
+                                           Blacklist
+                                        </a>
+                                    {% endif %}
+
+                                </div>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+
+            {% else %}
+                <div class="text-center py-5 text-muted">
+                    No companies found
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

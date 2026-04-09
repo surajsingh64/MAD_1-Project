@@ -1,0 +1,38 @@
+<div class="card shadow p-4 mt-5">
+<h4 class="">My Applications</h4>
+    {% if applications %}
+    <table class="table table-bordered mt-3">
+        <thead class="table-light">
+            <tr>
+                <th>Company</th>
+                <th>Job Title</th>
+                <th>Status</th>
+                <th>Applied On</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+            <tr>
+                <td>{{ app.drive.company.company_name }}</td>
+                <td>{{ app.drive.job_title }}</td>
+                <td>
+                {% if app.status == "selected" %}
+                    <span class="badge bg-success text-dark">Selected</span>
+                {% elif app.status == "rejected" %}
+                    <span class="badge bg-danger text-dark">Rejected</span>
+                {% elif app.status == "shortlisted" %}
+                    <span class="badge bg-warning text-dark">shortlisted</span>
+                {% else %}
+                    <span class="badge bg-info text-dark">{{ app.status }}</span>
+                {% endif %}
+                </td>
+                <td>{{ app.applied_on.strftime('%Y-%m-%d') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="text-muted">You haven't applied to any drives yet.</p>
+    {% endif %}
+
+    </div>

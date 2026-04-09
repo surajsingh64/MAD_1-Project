@@ -5,6 +5,7 @@
     box-sizing:border-box;
 }
 
+
 /* Body */
 body{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -59,7 +60,7 @@ body{
 /* DASHBOARD CARDS */
 
 .stat-card{
-background: linear-gradient(135deg,#0e0b2c,#2c2a72);
+background: linear-gradient(135deg,#0e0b2c,#2c2a72) !important;
 border-radius:12px;
 transition:0.2s;
 }
@@ -68,9 +69,6 @@ transition:0.2s;
 transform:translateY(-4px);
 box-shadow:0 10px 20px rgba(0,0,0,0.15);
 }
-
-
-
 .table{
     background:white;
 }
@@ -87,4 +85,18 @@ box-shadow:0 10px 20px rgba(0,0,0,0.15);
 
 .nav-link:hover{
     opacity:0.8;
+}
+.card {
+    transition: 0.3s;
+    border: none;
+}
+
+.btn-primary{
+    background-color: #0b0a2a;   
+    border: none;
+    transition: 0.3s ease;
+}
+
+.btn-primary:hover{
+    background-color: #0b7032;  
 }

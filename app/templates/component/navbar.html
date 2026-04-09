@@ -16,35 +16,42 @@
                    Dashboard
                 </a>
 
-                <a href="{{ url_for('student.profile') }}" class="nav-link text-white me-3">
+                <a href="{{ url_for('student.stu_profile', id=current_user.student.id) }}" class="nav-link text-white me-3">
                    Profile
                 </a>
 
-                <a href="{{ url_for('student.my_applications') }}" class="nav-link text-white me-3">
+                <a href="{{ url_for('student.application') }}" class="nav-link text-white me-3">
                    Applications
+                </a>
+
+                <a href="{{ url_for('student.history') }}" class="nav-link text-white me-3">
+                   History
                 </a>
 
             {% endif %}
 
             {% if current_user.role == 'company' %}
 
-                <a href="{{ url_for('company.dashboard') }}" class="nav-link text-white me-3">
+                <a href="{{ url_for('company.company_dashboard') }}" class="nav-link text-white me-3">
                    Dashboard
                 </a>
 
-                <a href="{{ url_for('company.post_job') }}" class="nav-link text-white me-3">
-                   Post Drive
+                <a href="{{ url_for('company.create_drive') }}" class="nav-link text-white me-3">
+                   Create Drive
                 </a>
 
-                <a href="{{ url_for('company.view_jobs') }}" class="nav-link text-white me-3">
-                   Drives
+                <a href="{{ url_for('company.placement_drives') }}" class="nav-link text-white me-3">
+                   My Drives
                 </a>
+                <a href="{{ url_for('company.profile') }}" class="nav-link text-white me-3">
+                   Profile
+               </a>
 
             {% endif %}
 
-                            {% if current_user.role == 'admin' %}
+               {% if current_user.role == 'admin' %}
 
-                <a href="{{ url_for('admin.dashboard') }}" class="nav-link text-white me-3">
+                <a href="{{ url_for('admin.a_admin') }}" class="nav-link text-white me-3">
                 Dashboard
                 </a>
 
@@ -55,24 +62,27 @@
                 <a href="{{ url_for('admin.companies') }}" class="nav-link text-white me-3">
                 Companies
                 </a>
-
+                 <a href="{{ url_for('admin.applications') }}" class="nav-link text-white me-3">
+                Applications
+                </a>
                 <a href="{{ url_for('admin.drives') }}" class="nav-link text-white me-3">
                 Drives
                 </a>
 
             {% endif %}
 
-            <a href="{{ url_for('auth.logout') }}" class="btn btn-light btn-sm px-3 ms-3">
+            <a href="{{ url_for('auth_bp.logout') }}" class="btn btn-light btn-sm px-3 ms-3">
                Logout
+
             </a>
 
         {% else %}
 
-            <a href="{{ url_for('auth.login') }}" class="btn btn-light btn-sm me-2">
+            <a href="{{ url_for('auth_bp.login') }}" class="btn btn-light btn-sm me-2">
                Login
             </a>
 
-            <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-sm">
+            <a href="{{ url_for('auth_bp.register_student') }}" class="btn btn-success btn-sm">
                Register
             </a>
 

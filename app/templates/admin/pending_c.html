@@ -1,42 +1,74 @@
-{% if all_pending_companies %}
+<div class="card-body">
 
-<table class="table table-bordered table-hover align-middle">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-semibold mb-0">
+            {% if view == "blacklist" %}
+                
+            {% else %}
+                Pending Companies
+            {% endif %}
+        </h5>
 
-    <thead class="table-light">
-        <tr>
-            <th>#</th>
-            <th>Company Name</th>
-            <th>Email</th>
-            <th class="text-center">Action</th>
-        </tr>
-    </thead>
+        
+    </div>
 
-    <tbody>
+    <hr>
 
-        {% for company in all_pending_companies %}
+   
+    {% set company_list = blacklist_companies if view == "blacklist" else pending_companies %}
 
-        <tr>
+    {% if company_list %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Company</th>
+                        <th>HR Name</th>
+                        <th>Website</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comp in company_list %}
+                    <tr>
+                        <td class="fw-semibold">{{ comp.company_name }}</td>
+                        <td>{{ comp.hr_name }}</td>
+                        <td>
+                            <a href="{{ comp.website }}" target="_blank" class="text-decoration-none">
+                                {{ comp.website or '—' }}
+                            </a>
+                        </td>
+                        <td>
+                            {% if view == "blacklist" %}
+                                <a href="{{ url_for('admin.whitelist_company', id=comp.id) }}"
+                                   class="btn btn-success btn-sm">Whitelist</a>
+                                <a href="{{ url_for('admin.delete_company', id=comp.id) }}"
+                                   class="btn btn-danger btn-sm">Delete</a>
+                            {% else %}
+                                <a href="{{ url_for('admin.approve_company', id=comp.id) }}"
+                                   class="btn btn-success btn-sm">Approve</a>
+                                <a href="{{ url_for('admin.reject_company', id=comp.id) }}"
+                                   class="btn btn-warning btn-sm">Reject</a>
+                                <a href="{{ url_for('admin.blacklist_company', id=comp.id) }}"
+                                   class="btn btn-danger btn-sm">Blacklist</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-            <td>{{ loop.index }}</td>
-            <td>{{ company.company_name }}</td>
-            <td>{{ company.user.email }}</td>
-            <td class="text-center">
-                <a href="{{ url_for('admin.approve_company', id=company.id) }}"
-                   class="btn btn-success btn-sm me-2">
-                   Approve
-                </a>
-                <a href="{{ url_for('admin.block_company', id=company.id) }}"
-                   class="btn btn-danger btn-sm">
-                   Blacklist
-                </a>
-            </td>
-        </tr>
+    {% else %}
+       \
+        <div class="text-center text-muted py-4">
+            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+            {% if view == "blacklist" %}
+                No blacklisted companies
+            {% else %}
+                No pending companies
+            {% endif %}
+        </div>
+    {% endif %}
 
-        {% endfor %}
-
-    </tbody>
-</table>
-
-{% else %}
-<p class="text-muted">No pending companies</p>
-{% endif %}
+</div>

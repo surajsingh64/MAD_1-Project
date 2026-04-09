@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Page Title -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">Student Dashboard</h3>
+    </div>
+
+    <!-- ===== Stats Section ===== -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-3">
+            <div class="card stat-card text-white p-3 bg-primary">
+                <h6 class="text-uppercase">Total Drives</h6>
+                <h2 class="fw-bold">{{ open_drive_count }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card text-white p-3 bg-success">
+                <h6 class="text-uppercase">Applied</h6>
+                <h2 class="fw-bold">{{ total_applied }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card text-white p-3 bg-warning">
+                <h6 class="text-uppercase">Shortlisted</h6>
+                <h2 class="fw-bold">{{ total_shortlisted }}</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card text-white p-3 bg-info">
+                <h6 class="text-uppercase">Selected</h6>
+                <h2 class="fw-bold">{{ total_selected }}</h2>
+            </div>
+        </div>
+
+    </div>
+</div>
+        {% include 'student/organisation.html'   %}
+        
+</div>
+</div>
+        {% include 'student/available_drive.html' %}
+        
+</div>
+  
+
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>All Applicants</h1>
+<div class="table-responsive">
+
+    <!-- Search -->
+    <form method="GET" class="d-flex mb-3">
+        <input type="text" name="search"
+               placeholder="Search student, company, job"
+               class="form-control me-2"
+               value="{{ search or '' }}">
+        <button class="btn btn-primary">Search</button>
+    </form>
+
+    <!-- Table -->
+    <table class="table table-hover align-middle">
+
+        <thead class="table-light text-center">
+            <tr>
+                <th>ID</th>
+                <th>Student Name</th>
+                <th>Roll No</th>
+                <th>Company</th>
+                <th>Job Role</th>
+                <th>Applied On</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody class="text-center">
+            {% for app in applicants %}
+            <tr>
+
+                <td>{{ app.id }}</td>
+                <td>{{ app.student.name }}</td>
+                <td>{{ app.student.roll_no }}</td>
+                <td>{{ app.drive.company.company_name }}</td>
+                <td>{{ app.drive.job_title }}</td>
+                <td>{{ app.applied_on.strftime('%d %b %Y') }}</td>
+                <div class="modal fade" id="viewModal{{ app.id }}" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 p-3">
+
+            <div class="modal-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <!-- LEFT CONTENT -->
+                    <div>
+                        <h3 class="fw-bold mb-3">Student Application</h3>
+
+                        <p><strong>Student Name:</strong> {{ app.student.name }}</p>
+                        <p><strong>Department:</strong> {{ app.student.branch or 'N/A' }}</p>
+                        <p><strong>Drive:</strong> {{ app.drive.job_title }}</p>
+                        <p><strong>Job Title:</strong> {{ app.drive.job_title }}</p>
+                    </div>
+
+                    <!-- RIGHT ICON -->
+                    
+                  <img src="{{ url_for('static', filename='uploads/images/student.svg') }}"
+                        width="200"
+                        alt="student">
+                    </div>
+
+                </div>
+
+                <!-- BUTTONS -->
+                <div class="text-center mt-4">
+
+                    {% if app.student.resume %}
+                        <a href="{{ app.student.resume }}"
+                           target="_blank"
+                           class="btn btn-outline-primary btn-sm me-2">
+                           View Resume
+                        </a>
+                    {% endif %}
+
+                    <button class="btn btn-outline-secondary btn-sm"
+                            data-bs-dismiss="modal">
+                        Back
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+                <td>
+                    {% if app.status == 'selected' %}
+                        <span class="badge bg-success">Selected</span>
+                    {% elif app.status == 'rejected' %}
+                        <span class="badge bg-danger">Rejected</span>
+                    {% elif app.status == 'shortlisted' %}
+                        <span class="badge bg-info text-dark">Shortlisted</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+    <button class="btn btn-sm btn-outline-secondary"
+            data-bs-toggle="modal"
+            data-bs-target="#viewModal{{ app.id }}">
+        View
+    </button>
+</td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+
+{% endblock %}

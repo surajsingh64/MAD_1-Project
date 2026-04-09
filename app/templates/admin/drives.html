@@ -1,48 +1,36 @@
-{% if pending_drives %}
 
-    <table class="table table-bordered table-hover">
-
+ <div class="card shadow p-4 mt-5">
+    <div class="d-flex justify-content-between"><h4>Pending drives</h4> </div>
+    {% if pending_drives %}
+    <table class="table table-bordered mt-3">
         <thead class="table-light">
             <tr>
-                <th>#</th>
-                <th>Drive Name</th>
-                <th>Company</th>
-                <th>Role</th>
-                <th>Deadline</th>
+                <th>ID</th>
+                <th>Company Name</th>
+                <th>job_title</th>
                 <th>Action</th>
             </tr>
         </thead>
-
         <tbody>
-
-            {% for drive in pending_drives %}
-
+            {% for Placement in pending_drives %}
             <tr>
-                <td>{{ loop.index }}</td>
-                <td>{{ drive.drive_name }}</td>
-                <td>{{ drive.company.company_name }}</td>
-                <td>{{ drive.role }}</td>
-                <td>{{ drive.deadline }}</td>
+                <td>{{ Placement.id }}</td>
+                <td>{{ Placement.company.company_name }}</td>
+                <td>{{ Placement.job_title}}</td>
                 <td>
+                    
+                    <a href="/admin/approve_drives/{{ Placement.id }}"
+                       class="btn btn-success btn-sm">Approve</a>
 
-                    <a href="{{ url_for('admin.approve_drives', id=drive.id) }}"
-                    class="btn btn-success btn-sm">Approve</a>
-
-                    <a href="{{ url_for('admin.drives_reject', id=drive.id) }}"
-                    class="btn btn-danger btn-sm">Reject</a>
+                    <a href="/admin/drives_reject/{{ Placement.id }}"
+                       class="btn btn-danger btn-sm">Reject</a>
 
                 </td>
-
             </tr>
-
             {% endfor %}
-
         </tbody>
-
     </table>
-
     {% else %}
-
-    <p class="text-muted">No pending drives</p>
-
-{% endif %}
+        <p class="text-muted">No pending drives</p>
+    {% endif %}
+ </div>

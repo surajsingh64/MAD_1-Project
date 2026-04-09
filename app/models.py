@@ -34,7 +34,7 @@ class Student(db.Model):
 
      is_blacklisted = db.Column(db.Boolean, default=False)
 
-     user = db.relationship('User',backref='student', uselist=False)
+     user = db.relationship('User', backref=db.backref("student", uselist=False))
 
      def __repr__(self):
           return f"<Student {self.name}>"
@@ -54,7 +54,7 @@ class Company(db.Model):
      approval_status = db.Column(db.String(20), default="pending")
 
      is_blacklisted = db.Column(db.Boolean, default=False)
-     user = db.relationship('User', backref="company", uselist=False)
+     user = db.relationship('User', backref=db.backref("company", uselist=False))
 
      def __repr__(self): 
           return f"<Company {self.company_name}>"
@@ -101,4 +101,4 @@ class Application(db.Model):
      )
 
      def __repr__(self):
-          return f"<Application S : {self.student_id} D : {self.drive_id}>"
+          return f"<Application Student:{self.student_id} Drive:{self.drive_id}>"

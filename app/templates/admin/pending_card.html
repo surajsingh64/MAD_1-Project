@@ -1,0 +1,36 @@
+
+
+    {% if pending_companies %}
+    <table class="table table-bordered mt-3">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Company Name</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for company in pending_companies %}
+            <tr>
+                <td>{{ company.id }}</td>
+                <td>{{ company.company_name }}</td>
+                <td>{{ company.user.email }}</td>
+                <td>
+                    <a href="/admin/approve/{{ company.id }}"
+                       class="btn btn-success btn-sm">Approve</a>
+
+                    <a href="/admin/reject/{{ company.id }}"
+                       class="btn btn-danger btn-sm">Reject</a>
+
+                    <a href="/admin/blacklist/{{ company.id }}"
+                       class="btn btn-dark btn-sm">blacklist</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="text-muted">No pending companies</p>
+    {% endif %}
+

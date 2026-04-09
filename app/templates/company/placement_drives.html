@@ -1,0 +1,65 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+     
+  <div class="container shadow p-4 mt-4">
+     <h4>Your Placement Drives</h4>
+
+    {% if drives %}
+        <table class="table table-bordered table-hover mt-3">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Job Title</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                    <th>Applicants</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for drive in drives %}
+                <tr>
+                    <td>{{ drive.id }}</td>
+                    <td>{{ drive.job_title }}</td>
+                    <td>{{ drive.deadline }}</td>
+                    <td>
+                        {% if drive.status == "open" %}
+                            <span class="badge bg-success">Open</span>
+                        {% elif drive.status == "closed" %}
+                            <span class="badge bg-danger">Closed</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ drive.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ drive.applications|length }}</td>
+                    <td>
+                        <a href="/company/view/{{ drive.id }}"
+                           class="btn btn-info btn-sm">View</a>
+
+                        <a href="{{ url_for('company.edit_drive', id=drive.id) }}" class="btn btn-warning btn-sm">
+                            Edit
+                        </a>
+
+                        <form action="/company/delete-drive/{{ drive.id }}"  method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                                Delete
+                            </button>
+                        </form>
+                        
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    {% else %}
+        <p class="text-muted mt-3">No placement drives created yet.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

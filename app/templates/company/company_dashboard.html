@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class='container py-4'>
+
+    <!-- Page Title -->
+    <div class='d-flex justify-content-between align-items-center mb-4'>
+        <h3 class='fw-bold'>Company Dashboard</h3>
+
+        <a href="{{ url_for('company.create_drive') }}"
+           class='btn btn-success btn-sm'>
+           + Create Drive
+        </a>
+    </div>
+    
+    <!--check approval status-->
+                {% if comp.approval_status == 'pending' %}
+            <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-hourglass-split"></i>
+                <div>Your account is <strong>pending approval</strong> by the admin. You cannot create drives until approved.</div>
+            </div>
+
+            {% elif comp.approval_status == 'rejected' %}
+            <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-x-circle"></i>
+                <div>Your account has been <strong>rejected</strong>. Please contact the admin.</div>
+            </div>
+
+            {% elif comp.is_blacklisted %}
+            <div class="alert alert-dark d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-slash-circle"></i>
+                <div>Your account has been <strong>blacklisted</strong>. You cannot perform any actions.</div>
+            </div>
+            {% endif %}
+    <!-- ===== Stats Section ===== -->
+    <div class='row g-7 mb-8'>
+
+        <div class='col-md-3'>
+            <div class='card stat-card text-white p-3 bg-primary'>
+                <h6 class='text-uppercase'>Total Drives</h6>
+                <h2 class='fw-bold'>{{ total_drives }}</h2>
+            </div>
+        </div>
+
+        <div class='col-md-3'>
+            <div class='card stat-card text-white p-3 bg-success'>
+                <h6 class='text-uppercase'>Open Drives</h6>
+                <h2 class='fw-bold'>{{ open_drives }}</h2>
+            </div>
+        </div>
+
+        <div class='col-md-3'>
+            <div class='card stat-card text-white p-3 bg-warning'>
+                <h6 class='text-uppercase'>Applications</h6>
+                <h2 class='fw-bold'>{{ total_applications }}</h2>
+            </div>
+        </div>
+    </div>
+        {% include 'company/drive_table.html'   %}
+          
+
+
+
+</div>
+
+{% endblock %}
+

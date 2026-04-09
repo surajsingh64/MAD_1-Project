@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-login_manager.login_view = "auth.login"
+login_manager.login_view = "auth_bp.login"
 
 
 def create_app():
@@ -15,37 +15,30 @@ def create_app():
         static_folder="static"
     )
 
-    app.config.from_object('config.Config')
+    app.config.from_object("config.Config")
 
     db.init_app(app)
     login_manager.init_app(app)
 
-    # Import Blueprints
+    # Blueprints
     from app.auth import auth_bp
     from app.admin import admin_bp
     from app.student import student_bp
     from app.company import company_bp
+    from app.home import home
 
-    # Register Blueprints with URL Prefix
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp, url_prefix="/admin")
     app.register_blueprint(student_bp, url_prefix="/student")
     app.register_blueprint(company_bp, url_prefix="/company")
+    app.register_blueprint(home)
 
-    @app.route('/')
-    def index():
-        from flask import redirect, url_for
-        return redirect(url_for('auth.login'))
-
-    # Create tables and default admin
     with app.app_context():
         from app import models
         db.create_all()
         create_admin()
 
     return app
-
-
 def create_admin():
     from app.models import User
 

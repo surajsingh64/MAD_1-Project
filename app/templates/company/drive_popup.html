@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 class="fw-bold">Create Placement Drive</h3>
+
+<div class="container-fluid py-4">
+      
+    <!-- ===== Form Card ===== -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form method="POST">
+                <div class="row g-4">
+
+                    <!-- Job Title -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Job Title *</label>
+                        <input type="text" name="job_title"
+                               class="form-control"
+                               placeholder="e.g. Software Engineer"
+                               required>
+                    </div>
+
+                    <!-- Deadline -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Application Deadline *</label>
+                        <input type="date" name="deadline"
+                               class="form-control"
+                               required>
+                    </div>
+
+                    <!-- Eligibility -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Eligibility Criteria</label>
+                        <input type="text" name="eligibility"
+                               class="form-control"
+                               placeholder="e.g. B.Tech CSE, 7+ CGPA">
+                    </div>
+
+                    <!-- Description -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Job Description</label>
+                        <textarea name="description"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Enter job role, required skills, responsibilities..."></textarea>
+                    </div>
+
+                </div>
+
+                <!-- ===== Buttons ===== -->
+                <div class="mt-4 d-flex justify-content-end gap-2">
+
+                    <a href="{{ url_for('company.company_dashboard') }}"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-success px-4">
+                        Create Drive
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

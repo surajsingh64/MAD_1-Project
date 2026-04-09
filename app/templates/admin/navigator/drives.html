@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>All drives</h1>
+<div class="card shadow p-4 mt-5 mx-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between mb-3">
+        <h4>Drives</h4>
+
+        <form method="GET" action="{{ url_for('admin.drives') }}" class="d-flex">
+            <input type="text" name="search"
+                   placeholder="Search by job and company"
+                   class="form-control me-2"
+                   value="{{ request.args.get('search','') }}">
+            <button class="btn btn-primary">Search</button>
+        </form>
+    </div>
+
+    <!-- ================= Ongoing Drives ================= -->
+    <h5 class="fw-semibold mb-3">Ongoing Drives</h5>
+
+    {% if ongoing_drives %}
+    <table class="table table-hover text-center align-middle">
+
+        <thead class="table-light">
+            <tr>
+                <th>id</th>
+                <th>Company</th>
+                <th>Role</th>
+                <th>Deadline</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for d in ongoing_drives %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ d.company.company_name }}</td>
+                <td>{{ d.job_title }}</td>
+                <td>{{ d.deadline }}</td>
+                <td>{{d.status}}</td>
+                <div class="modal fade" id="driveModal{{ d.id }}" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 p-4">
+
+            <div class="modal-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <!-- LEFT SIDE -->
+                    <div>
+
+                        <h5 class="fw-bold mb-3">
+                            {{ d.company.company_name }}
+                        </h5>
+
+                        <p class="text-muted mb-1">Job Title</p>
+                        <p class="fw-semibold">{{ d.job_title }}</p>
+
+                        <p class="text-muted mb-1">Job Description</p>
+                        <p>{{ d.description }}</p>
+
+                        <p class="text-muted mb-1">Salary</p>
+                        <p>₹ {{ d.salary or 'Not specified' }}</p>
+
+                        <p class="text-muted mb-1">Location</p>
+                        <p>{{ d.location or 'Not specified' }}</p>
+
+                    </div>
+
+
+                </div>
+
+                <!-- BUTTON -->
+                <div class="text-center mt-4">
+                    <button class="btn btn-outline-primary btn-sm"
+                            data-bs-dismiss="modal">
+                        Go Back
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+                <td>
+                    {% if d.status != 'open' %}
+                        <a href="/admin/approve_drives/{{ d.id }}"
+                           class="btn btn-success btn-sm">Approve</a>
+                    {% else %}
+                        <a href="/admin/drives_reject/{{ d.id }}"
+                           class="btn btn-danger btn-sm">Reject</a>
+                    {% endif %}
+                </td>
+                <td>
+                                <button class="btn btn-sm btn-outline-secondary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#driveModal{{ d.id }}">
+                View
+            </button>
+                </td>
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+    {% else %}
+        <p class="text-muted">No ongoing drives</p>
+    {% endif %}
+
+
+    <!-- ================= Expired Drives ================= -->
+    <h5 class="fw-semibold mt-5 mb-3">Expired Drives</h5>
+
+    {% if expired_drives %}
+    <table class="table table-hover text-center align-middle">
+
+        <thead class="table-light">
+            <tr>
+                <th>id</th>
+                <th>Company</th>
+                <th>Role</th>
+                 <td>status</td>
+                <th>Deadline</th>
+               
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for d in expired_drives %}
+            <tr class="table-secondary">
+                <td>{{ loop.index }}</td>
+                <td>{{ d.company.company_name }}</td>
+                <td>{{ d.job_title }}</td>
+                <td>{{d.status}}</td>
+                <td>
+                    {{ d.deadline }}
+                    <span class="badge bg-danger ms-2">Expired</span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+    {% else %}
+        <p class="text-muted">No expired drives</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

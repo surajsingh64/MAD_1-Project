@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Placement Portal - Home</title>
+</head>
+<body>
+    {% extends "base.html" %}
+
+    {% block content %}
+    <div class="text-center">
+        <h1>Welcome to the Placement Portal</h1>
+        <p>Your gateway to career opportunities.</p>
+        <a href="{{ url_for('auth_bp.login') }}" class="btn btn-primary">Login</a>
+        <a href="{{ url_for('auth_bp.register_student') }}" class="btn btn-secondary">Register as Student</a>
+        <a href="{{ url_for('auth_bp.register_company') }}" class="btn btn-secondary">Register as Company</a>
+    </div>
+    {% endblock %}
+</body>
+</html>

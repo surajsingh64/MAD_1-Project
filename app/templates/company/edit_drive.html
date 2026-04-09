@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-4">
+
+            <h3>
+                Edit Placement Drive
+            </h3>
+
+            <form method="POST">
+
+                <!-- Job Title -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Job Title
+                    </label>
+                    <input type="text"
+                           name="job_title"
+                           class="form-control"
+                           value="{{ curr_drive.job_title }}"
+                           required>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Job Description
+                    </label>
+                    <textarea name="description"
+                              class="form-control"
+                              rows="4">{{ curr_drive.description }}</textarea>
+                </div>
+
+                <!-- Elig -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Eligibility Criteria
+                    </label>
+                    <input type="text"
+                           name="eligibility"
+                           class="form-control"
+                           value="{{ curr_drive.eligibility }}">
+                </div>
+
+                <!-- Deadline -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">
+                        Application Deadline
+                    </label>
+                    <input type="date"
+                           name="deadline"
+                           class="form-control"
+                           value="{{ curr_drive.deadline.strftime('%Y-%m-%d') }}"
+                           required>
+                </div>
+
+                <!-- butn -->
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('company.company_dashboard') }}"
+                       class="btn btn-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary px-4">
+                        Update Drive
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

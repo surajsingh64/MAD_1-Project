@@ -1,7 +1,7 @@
 {% if all_blocked_companies %}
-
+<h4> Blacklisted Companies</h4>
 <table class="table table-striped table-bordered mt-3">
-    <thead class="table-light">
+    <thead >
         <tr>
             <th>ID</th>
             <th>Company Name</th>
@@ -9,7 +9,6 @@
             <th class="text-center">Action</th>
         </tr>
     </thead>
-
     <tbody>
         {% for company in all_blocked_companies %}
         <tr>
@@ -18,7 +17,7 @@
             <td>{{ company.user.email }}</td>
 
             <td class="text-center">
-                <a href="{{ url_for('admin.pending_company', id=company.id) }}"
+                <a href="{{ url_for('admin.whitelist_company', id=company.id) }}"
                    class="btn btn-success btn-sm">
                    Whitelist
                 </a>

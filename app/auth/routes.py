@@ -2,69 +2,121 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
-from app.models import User
+from app.models import Student, User, Company
 from . import auth_bp
 
+# Student Register
+@auth_bp.route("/register/student", methods=["GET", "POST"])
+def register_student():
 
-# ---------------- REGISTER ----------------
-@auth_bp.route("/register", methods=["GET", "POST"])
-def register():
     if request.method == "POST":
+
         email = request.form.get("email")
         password = request.form.get("password")
-        role = request.form.get("role")  # student/admin/company
+        name = request.form.get("name")
+        roll_no = request.form.get("roll_no")
 
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            flash("Email already exists!")
-            return redirect(url_for("auth.register"))
+        if User.query.filter_by(email=email).first():
+            flash("Already registered")
+            return redirect(url_for("auth_bp.login"))
 
-        hashed_password = generate_password_hash(password)
+        user = User(
+        email=email,
+        password=generate_password_hash(password),
+        role="student"
+    )
 
-        new_user = User(
-            email=email,
-            password=hashed_password,
-            role=role
-        )
+        db.session.add(user)
+        db.session.flush()   # gets user.id without committing
 
-        db.session.add(new_user)
+        student = Student(
+        user_id=user.id,
+        name=name,
+        roll_no=roll_no
+    )
+
+        db.session.add(student)
         db.session.commit()
 
-        flash("Registration successful!")
-        return redirect(url_for("auth.login"))
+        flash("Registered successfully, please login.")
+        return redirect(url_for("auth_bp.login"))
 
-    return render_template("auth/register.html")
+    return render_template("auth/register_student.html")
+
+# Company Register
+
+@auth_bp.route("/register/company", methods=["GET", "POST"])
+def register_company():
+
+    if request.method == "POST":
+
+        email = request.form.get("email")
+        password = request.form.get("password")
+        company_name = request.form.get("company_name")
+
+        if User.query.filter_by(email=email).first():
+            flash("Company already registered")
+            return redirect(url_for("auth_bp.login"))
+
+        user = User(
+            email=email,
+            password=generate_password_hash(password),
+            role="company"
+        )
+
+        db.session.add(user)
+        db.session.flush()  
+
+        company = Company(
+            user_id=user.id,
+            company_name=company_name
+        )
+
+        db.session.add(company)
+        db.session.commit()
+
+        flash("Registered successfully, please login.")
+        return redirect(url_for("auth_bp.login"))
+
+    return render_template("auth/register_company.html")
 
 
-# ---------------- LOGIN ----------------
+# Login
+
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
+
     if request.method == "POST":
+
         email = request.form.get("email")
         password = request.form.get("password")
 
         user = User.query.filter_by(email=email).first()
 
         if user and check_password_hash(user.password, password):
+
             login_user(user)
 
-            # Role-based redirect
             if user.role == "admin":
-                return redirect(url_for("admin.dashboard"))
+                return redirect(url_for("admin.a_admin"))
+
             elif user.role == "student":
                 return redirect(url_for("student.dashboard"))
+
             else:
-                return redirect(url_for("company.dashboard"))
+                return redirect(url_for("company.company_dashboard"))
 
         flash("Invalid email or password!")
 
     return render_template("auth/login.html")
 
 
-# ---------------- LOGOUT ----------------
+# -----------------------------
+# Logout
+# -----------------------------
 @auth_bp.route("/logout")
 @login_required
 def logout():
+
     logout_user()
-   # flash("Logged out successfully!")
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("auth_bp.login"))

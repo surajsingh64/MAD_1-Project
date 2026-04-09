@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- Profile Card -->
+    <div class="card shadow-sm border-0 rounded-4 mx-auto" style="max-width: 700px;">
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold">Company Profile</h4>
+
+                <!-- Edit Button -->
+                <button class="btn btn-outline-primary btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editProfileModal">
+                    Edit
+                </button>
+            </div>
+
+            <hr>
+
+            <!-- Profile Info -->
+            <p><strong>Company Name:</strong> {{ curr_company.company_name }}</p>
+            <p><strong>HR Name:</strong> {{ curr_company.hr_name }}</p>
+            <p><strong>Website:</strong> {{ curr_company.website }}</p>
+            <p><strong>Email:</strong> {{ curr_company.user.email }}</p>
+
+            <!-- Status -->
+            <p>
+                <strong>Status:</strong>
+                {% if curr_company.approval_status == "approved" %}
+                    <span class="badge bg-success">Approved</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                {% endif %}
+            </p>
+
+        </div>
+    </div>
+
+</div>
+<!-- ===== EDIT PROFILE MODAL ===== -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow-lg">
+
+            <!-- Header -->
+            <div class="modal-header border-0">
+                <h4 class="text-primary fw-bold">Update Profile</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body px-4 pb-4">
+
+                <form method="POST" action="{{ url_for('company.profile') }}">
+
+                    <div class="row g-3">
+
+                        <!-- Company Name -->
+                        <div class="col-12">
+                            <label class="fw-semibold text-danger">Company Name</label>
+                            <input type="text"
+                                   class="form-control"
+                                   value="{{ curr_company.company_name }}"
+                                   readonly>
+                        </div>
+
+                        <!-- HR Name -->
+                        <div class="col-md-6">
+                            <label>HR Name</label>
+                            <input type="text" name="hr_name"
+                                   value="{{ curr_company.hr_name }}"
+                                   class="form-control">
+                        </div>
+
+                        <!-- Website -->
+                        <div class="col-md-6">
+                            <label>Website</label>
+                            <input type="text" name="website"
+                                   value="{{ curr_company.website }}"
+                                   class="form-control">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label>Email</label>
+                            <input type="email" name="email"
+                                   value="{{ curr_company.user.email }}"
+                                   class="form-control">
+                        </div>
+
+                        <!-- Approval Status -->
+                        <div class="col-md-6">
+                            <label class="text-danger">Approval Status</label>
+                            <input type="text"
+                                   class="form-control"
+                                   value="{{ curr_company.approval_status }}"
+                                   readonly>
+                        </div>
+
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn btn-success px-4">
+                            Update
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
