@@ -45,7 +45,6 @@ def dashboard():
             PlacementDrive.deadline >= today
         ).all()
 
-        # ✅ Build companies list from available drives
     companies = []
     seen = set()
     for d in available_drives:
@@ -67,7 +66,7 @@ def dashboard():
             applied_drive_ids=applied_ids,
             available_drives=available_drives,
             open_drive_count=open_drive_count,
-            companies=companies   # ✅ add this
+            companies=companies   
         )
 
 
@@ -177,15 +176,14 @@ def organization():
 
     drives = PlacementDrive.query.filter(
         PlacementDrive.status == "open",
-        PlacementDrive.deadline >= today  # ✅ same filter as dashboard
-    ).all()
+        PlacementDrive.deadline >= today )
 
     companies = []
     seen = set()
 
     for d in drives:
         if d.company_id not in seen:
-            companies.append(d.company)  # ✅ make sure relationship is loaded
+            companies.append(d.company)  
             seen.add(d.company_id)
 
     return render_template(
